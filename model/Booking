@@ -1,0 +1,174 @@
+package model;
+
+import exceptions.BookingALreadyExistsException;
+import exceptions.InvalidTimeException;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Booking {
+    private final Restaurant restaurant;
+    Scanner sc;
+    int maxTime;
+
+    public int getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(int maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    protected ArrayList<Customer> reservations;
+
+    public ArrayList<Customer> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(ArrayList<Customer> reservations) {
+        this.reservations = reservations;
+    }
+
+    Map<Cuisine, Customer> reso;
+
+    public Map<Cuisine, Customer> getReso() {
+        return reso;
+    }
+
+    public void setReso(Map<Cuisine, Customer> reso) {
+        this.reso = reso;
+    }
+
+    ArrayList<Cuisine> cuisines;
+
+    public ArrayList<Cuisine> getCuisines() {
+        return cuisines;
+    }
+
+    public Booking(Restaurant restaurant) {
+        this.restaurant = restaurant;
+        this.sc = new Scanner(System.in);
+    }
+
+    public void info(){
+        System.out.println("Enter the name of the Customer");
+        String name = sc.next();
+        Customer c = new RegularCustomer(name);
+        c.setName(name);
+
+        restaurant.ReservationList();
+        System.out.println("Enter the time for reservation between 13 and 22hrs");
+        int reservationTime = sc.nextInt();
+
+        CheckException(c, reservationTime);
+
+        MakeNewBooking(c, reservationTime);
+    }
+
+    // MODIFIES: this and RegularCustomer
+    // EFFECTS:  books the customer into the requested timeslot if it is a valid timeslot,
+    // and let's the RegularCustomer know the booking time.
+    public void MakeNewBooking(Customer c, int reservationTime) {
+        c.setName(c.getName());
+
+        //if (!reservations.contains(c))
+        reservations.set(reservationTime, c);
+
+        System.out.println("Customer " + c.getName() + " has been booked at " + c.getReservationTime() + "hrs");
+
+        VerifyBooking(c, reservationTime);
+        //save();
+    }
+
+    //EFFECTS: returns true if the customer is found at the booking time.
+    public boolean VerifyBooking(Customer c, int reservationTime) {
+        Customer reservedCustomer = reservations.get(reservationTime);
+        if (reservedCustomer == null) {
+            System.out.println("There is no customer booked at the time");
+            return false;
+        }
+        if (reservedCustomer.getName().equals(c.getName())) {
+            System.out.println("Yes the Customer is booked at the time");
+            return true;
+        }
+        return false;
+    }
+
+    // EFFECTS:  Gives the option to either cancel a boking or change the time of booking
+    public void ChangeBooking(Customer c, int reservationTime) throws InvalidTimeException, BookingALreadyExistsException {
+        System.out.println("Type 1 to cancel reservation or type 2 to change the time of booking");
+        int modselection = sc.nextInt();
+
+        if (modselection == 1) {
+            Cancelinfo();
+        } else if (modselection == 2) {
+            ChangeTimeInfo();
+        } else
+            System.out.println("Invalid Selection");
+    }
+
+    public void Cancelinfo() throws InvalidTimeException, BookingALreadyExistsException {
+        System.out.println("Enter name of customer to change");
+        String name = sc.next();
+        System.out.println("Enter the time the Customer was booked for");
+        int time = sc.nextInt();
+        Customer c = new RegularCustomer(name);
+        c.setReservationTime(time);
+        CancelBooking(c);
+    }
+
+    // MODIFIES: this and RegularCustomer
+    // EFFECTS:  cancels the customer booked in the bookings.
+    public void CancelBooking(Customer c) {
+        //if (reservations.contains(c))
+        reservations.set(c.getReservationTime(), null);
+        restaurant.ReservationList();
+    }
+
+    public void ChangeTimeInfo(){
+        System.out.println("Enter name of customer to change");
+        String name = sc.next();
+
+        System.out.println("Enter the time the RegularCustomer was booked for");
+        int time = sc.nextInt();
+
+        Customer customer = new RegularCustomer(name);
+        customer.setName(name);
+        CheckException(customer, time);
+
+        reservations.set(time, customer);
+
+        System.out.println("Enter the new time to change the booking to");
+        int newTime = sc.nextInt();
+
+        ChangeTime(customer, newTime);
+    }
+
+    // MODIFIES: this and RegularCustomer
+    // EFFECTS:  changes the customer booked in the bookings, and let's the RegularCustomer know the new booking time.
+    public void ChangeTime(Customer customer, int newTime) {
+
+        int reservedTime = customer.getReservationTime();
+        customer.getName();
+        System.out.println(customer.getName() + "'s time is changing from " + reservedTime);
+
+        System.out.println(" to " + newTime);
+        reservations.set(reservedTime, null);
+        reservations.set(newTime, customer);
+        CheckException(customer, newTime);
+        restaurant.ReservationList();
+    }
+
+    private void CheckException(Customer customer, int newTime) {
+        try {
+            customer.setReservationTime(newTime);
+        } catch (InvalidTimeException e) {
+            System.out.println("That is not a valid time, start over");
+        } catch (BookingALreadyExistsException e) {
+            System.out.println("There is already a booking at that time");
+        } finally {
+            System.out.println("Read carefully");
+        }
+    }
+}
