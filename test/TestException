@@ -1,0 +1,41 @@
+package test;
+
+import model.Customer;
+import model.RegularCustomer;
+import model.Restaurant;
+import exceptions.BookingALreadyExistsException;
+import exceptions.InvalidTimeException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+
+public class TestException {
+    Restaurant piazza;
+    Customer kun;
+    Customer ran;
+
+    @BeforeEach
+
+    public void setUp() {
+        piazza = new Restaurant();
+        kun = new RegularCustomer("Kunal");
+        ran = new RegularCustomer("Ranger"); }
+
+//    @Test
+//    public void testInvalidTimeException(){
+//        try {
+//            piazza.MakeNewBooking(kun, 31);
+//            fail("Did not throw expected exception");
+//        } catch (InvalidTimeException e){
+//            // all g
+//        } catch (BookingALreadyExistsException e){
+//            fail("caught unexpected exception");
+//        }
+//    }
+}
